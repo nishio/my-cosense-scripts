@@ -21,6 +21,20 @@
         'concat-pages.user.js'
     ];
 
+    // Wait for #editor element to be ready
+    const waitForEditor = async () => {
+        await new Promise(resolve => {
+            let timer = null;
+            timer = setInterval(() => {
+                if (!document.getElementById('editor')) return;
+                clearInterval(timer);
+                resolve();
+            }, 1000);
+        });
+        // Wait an extra second for safety
+        await new Promise(resolve => setTimeout(resolve, 1000));
+    };
+
     const loadScript = (scriptName) => {
         const url = `https://cdn.jsdelivr.net/gh/nishio/my-cosense-scripts@main/scripts/${scriptName}`;
         GM_xmlhttpRequest({
@@ -45,7 +59,10 @@
         });
     };
 
-    // Load all scripts
-    console.log("Attempting to load scripts from scripts/...");
-    scripts.forEach(loadScript);
+    // Load all scripts after editor is ready
+    window.addEventListener('load', async () => {
+        await waitForEditor();
+        console.log("Attempting to load scripts from scripts/...");
+        scripts.forEach(loadScript);
+    });
 })();
