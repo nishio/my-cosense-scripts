@@ -63,3 +63,109 @@ Scrapboxで使用するユーザースクリプト集です。GitHubでの更新
 - `GM_addElement`: CSP準拠のスクリプト読み込みを行うため
 
 これらの権限は自動的に要求されるため、ユーザーが手動で設定する必要はありません。
+
+## 同様のシステムの実装方法
+
+GitHubでホストされたスクリプトをTampermonkey経由で読み込むシステムを実装する手順を説明します。
+
+### 1. リポジトリの構成
+
+```
+your-scripts/
+├── src/          # 開発用ソースコード
+│   ├── script1.user.js
+│   └── entry-point.user.js
+└── scripts/      # 配布用スクリプト（minify済み）
+    ├── script1.user.js
+    └── entry-point.user.js
+```
+
+### 2. エントリーポイントスクリプトの実装例
+
+```javascript
+// ==UserScript==
+// @name         スクリプトローダー
+// @namespace    http://your.domain/
+// @version      0.1
+// @description  GitHubからユーザースクリプトを読み込む
+// @author       Your Name
+// @match        https://your-target-site.com/*
+// @grant        GM_addElement
+// @grant        GM_xmlhttpRequest
+// ==/UserScript==
+
+// 特定の要素の準備を待つ関数
+const waitForElement = (selector) => {
+  return new Promise((resolve) => {
+    const checkElement = setInterval(() => {
+      const element = document.querySelector(selector);
+      if (element) {
+        clearInterval(checkElement);
+        setTimeout(resolve, 1000); // 安全マージン
+      }
+    }, 1000);
+  });
+};
+
+// CSP対応のスクリプト読み込み
+const loadScript = async (url) => {
+  console.log(`[loader] Loading script: ${url}`);
+  GM_addElement('script', {
+    src: url,
+    type: 'text/javascript'
+  });
+};
+
+// メイン処理
+window.addEventListener('load', async () => {
+  // 必要に応じて特定の要素の準備を待つ
+  // await waitForElement('#your-element');
+
+  const scripts = [
+    'https://cdn.jsdelivr.net/gh/your-name/your-repo@main/scripts/script1.user.js'
+  ];
+  
+  for (const script of scripts) {
+    await loadScript(script);
+  }
+});
+```
+
+### 3. 実装のポイント
+
+1. **CSP対策**:
+   - `GM_addElement`を使用してスクリプトを追加
+   - インラインスクリプトを避ける
+   - 動的なスクリプト読み込みにはTampermonkey APIを使用
+
+2. **タイミング制御**:
+   - `window.load`イベントを基準にする
+   - 必要に応じて特定の要素の準備を待つ
+   - 十分な安全マージンを設定（1秒程度）
+
+3. **スクリプトの配信**:
+   - jsDelivrを使用してCDN経由で配信
+   - URLフォーマット: `https://cdn.jsdelivr.net/gh/ユーザー名/リポジトリ名@ブランチ名/パス`
+   - 開発時はブランチを指定してテスト可能
+
+4. **更新管理**:
+   - GitHubのリリースタグを活用
+   - 更新履歴の管理
+   - テスト用と本番用のブランチを分離
+
+### 4. トラブルシューティング
+
+1. **CSP違反エラーが出る場合**:
+   - `GM_addElement`の使用を確認
+   - インラインスクリプトを避ける
+   - Tampermonkeyの権限設定を確認
+
+2. **スクリプトが読み込まれない場合**:
+   - コンソールログを確認
+   - タイミング制御の調整
+   - CDNのURLが正しいか確認
+
+3. **更新が反映されない場合**:
+   - ブラウザのキャッシュをクリア
+   - Tampermonkeyのキャッシュをクリア
+   - CDNのキャッシュ更新を待つ
