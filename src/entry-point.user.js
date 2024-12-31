@@ -16,7 +16,8 @@
     const scripts = [
         'pomodoro-scrapbox.user.js',
         'open-with-porter.user.js',
-        'to-my-proj.user.js'
+        'to-my-proj.user.js',
+        'concat-pages.user.js'
     ];
 
     const loadScript = (scriptName) => {
