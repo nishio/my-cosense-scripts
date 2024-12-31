@@ -46,5 +46,6 @@
     };
 
     // Load all scripts
+    console.log("Attempting to load scripts from scripts/...");
     scripts.forEach(loadScript);
 })();
