@@ -1,26 +1,49 @@
 # my-cosense-scripts
 
-Scrapboxで使用するユーザースクリプト集です。
-
-## 構成
-
-- `scripts/`: minify済みのユーザースクリプト
-- `src/`: ソースコード
+Scrapboxで使用するユーザースクリプト集です。GitHubでの更新が自動的に反映される便利な機能を備えています。
 
 ## インストール方法
 
 1. Tampermonkeyをインストール
-2. 必要なスクリプトをインストール
+   - [Chrome版Tampermonkey](https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo)をインストール
+   - 他のブラウザの場合は各ブラウザのエクステンションストアからTampermonkeyをインストール
+
+2. エントリーポイントスクリプトをインストール
+   - [エントリーポイントスクリプト](https://raw.githubusercontent.com/nishio/my-cosense-scripts/main/scripts/entry-point.user.js)をクリック
+   - Tampermonkeyのインストール画面が表示されたら「インストール」をクリック
+
+以上で設定完了です。Scrapboxを開くと自動的に全てのスクリプトが読み込まれます。
+
+## 特徴
+
+- GitHubのリポジトリが更新されると、自動的に最新のスクリプトが反映されます
+- 個別のスクリプトをインストールする必要はありません
+- Tampermonkeyの設定画面から個別に無効化することも可能です
 
 ## 含まれるスクリプト
 
-- リンクをたどって到達できるページを全部まとめるJS
-- PomodoroScrapbox
-- open_with_porter
-- ToMyProj
-- AskChatGPT
-- ChatGPTToScrapbox
+### PomodoroScrapbox
+- ポモドーロタイマーをScrapboxページとして作成
+- PageMenuに「Pomodoro」が追加されます
+- クリックすると時間とタイトルを入力できます
+
+### Open with Porter
+- ScrapboxページをPorterで開く
+- PageMenuに「Porter」が追加されます
+- クリックするとPorterでページが開きます
+
+### ToMyProj
+- 他のプロジェクトのページを自分のプロジェクトにコピー
+- ポップアップメニューに「ToMyProj」が追加されます
+- アイコンリンクも自動的に修正されます
 
 ## 開発者向け情報
 
-minifyする可能性があるため、`src/`ディレクトリにソースコードを配置し、`scripts/`ディレクトリにminify済みのファイルを配置する構造としています。
+### リポジトリ構成
+- `src/`: ソースコード
+- `scripts/`: minify済みのユーザースクリプト
+
+### スクリプトの追加方法
+1. `src/`ディレクトリに新しいスクリプトを追加
+2. `scripts/`ディレクトリにコピー
+3. `entry-point.user.js`の`scripts`配列に新しいスクリプト名を追加
