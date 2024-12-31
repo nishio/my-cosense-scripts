@@ -9,7 +9,7 @@ Scrapboxで使用するユーザースクリプト集です。GitHubでの更新
    - 他のブラウザの場合は各ブラウザのエクステンションストアからTampermonkeyをインストール
 
 2. エントリーポイントスクリプトをインストール
-   - [エントリーポイントスクリプト](https://raw.githubusercontent.com/nishio/my-cosense-scripts/main/scripts/entry-point.user.js)をクリック
+   - [エントリーポイントスクリプト](https://raw.githubusercontent.com/nishio/my-cosense-scripts/main/src/entry-point.user.js)をクリック
    - Tampermonkeyのインストール画面が表示されたら「インストール」をクリック
 
 以上で設定完了です。Scrapboxを開くと自動的に全てのスクリプトが読み込まれます。
