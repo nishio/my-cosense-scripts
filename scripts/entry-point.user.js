@@ -12,6 +12,10 @@
 
 (function() {
     'use strict';
+    
+    console.log("Entry point script starting execution...");
+    console.log("Current URL:", window.location.href);
+    console.log("Tampermonkey grants:", Object.keys(window).filter(k => k.startsWith('GM_')).join(', '));
 
     // Load scripts from jsDelivr (GitHub CDN)
     const scripts = [
@@ -46,5 +50,7 @@
     };
 
     // Load all scripts
+    console.log("Starting to load scripts:", scripts);
     scripts.forEach(loadScript);
+    console.log("Finished initiating script loading");
 })();
