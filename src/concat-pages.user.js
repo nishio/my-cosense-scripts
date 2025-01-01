@@ -93,12 +93,12 @@ function ensureDialogExists() {
 // Global variables for caching and state management
 let links1hop = [];
 let links2hop = [];
-let projLinks = [];
 let cache = null;
 let initDone = false;
 
 // Initialize and display the dialog
 async function initAndShowDialog() {
+  console.log("[concat-pages] Initializing dialog...");
   if (!initDone) {
     const projectName = scrapbox.Project.name;
     const data = await fetchAllPageData(projectName, scrapbox.Page.title);
@@ -112,11 +112,14 @@ async function initAndShowDialog() {
       projectName,
       title,
     }));
-    projLinks = relatedPages.projectLinks1hop.map(({ projectName, title }) => ({
-      projectName,
-      title,
-    }));
+    const projLinks = data.relatedPages.projectLinks1hop.map(
+      ({ projectName, title }) => ({
+        projectName,
+        title,
+      })
+    );
 
+    console.log("[concat-pages] Setting up cache...");
     // Cache all linked pages
     cache = {
       links1hop: {},
@@ -124,6 +127,7 @@ async function initAndShowDialog() {
       projLinks: {},
     };
 
+    console.log("[concat-pages] Fetching page contents...");
     await Promise.all([
       ...links1hop.map(async (link) => {
         cache.links1hop[link.title] = await fetchPage(link);
@@ -136,8 +140,9 @@ async function initAndShowDialog() {
       }),
     ]);
 
+    console.log("[concat-pages] Creating dialog and setting up event listeners...");
     ensureDialogExists();
-    // Add event listeners
+    // Add event listeners for checkbox changes
     document
       .getElementById("cb1hop")
       .addEventListener("change", updateTextareaContent);
@@ -149,8 +154,10 @@ async function initAndShowDialog() {
       .addEventListener("change", updateTextareaContent);
 
     initDone = true;
+    console.log("[concat-pages] Initialization complete");
   }
 
+  // Update content and show dialog
   updateTextareaContent();
   ensureDialogExists().showModal();
 }
