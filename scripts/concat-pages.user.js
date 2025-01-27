@@ -32,14 +32,23 @@ async function fetchPage({ projectName, title }) {
   }
 }
 
-// Create and manage the dialog UI
 function ensureDialogExists() {
   let dialog = document.getElementById("resultDialog");
   if (!dialog) {
     dialog = document.createElement("dialog");
     dialog.id = "resultDialog";
 
-    // Checkboxes
+    // チェックボックス
+    // Create label and checkbox for current page
+    const labelCurrent = document.createElement("label");
+    const cbCurrent = document.createElement("input");
+    cbCurrent.type = "checkbox";
+    cbCurrent.id = "cbCurrent";
+    cbCurrent.checked = true;
+    labelCurrent.appendChild(cbCurrent);
+    labelCurrent.appendChild(document.createTextNode("current"));
+    dialog.appendChild(labelCurrent);
+    dialog.appendChild(document.createTextNode(" "));
     const label1hop = document.createElement("label");
     const cb1hop = document.createElement("input");
     cb1hop.type = "checkbox";
@@ -124,17 +133,14 @@ async function initAndShowDialog() {
       projLinks: {},
     };
 
-    await Promise.all([
-      ...links1hop.map(async (link) => {
-        cache.links1hop[link.title] = await fetchPage(link);
-      }),
-      ...links2hop.map(async (link) => {
-        cache.links2hop[link.title] = await fetchPage(link);
-      }),
-      ...projLinks.map(async (link) => {
-        cache.projLinks[link.title] = await fetchPage(link);
-      }),
-    ]);
+    // Fetch the current page content
+    const currentPageContent = await fetchPage({
+      projectName,
+      title: scrapbox.Page.title,
+    });
+
+    // Store in cache with a separate key
+    cache.currentPage = currentPageContent;
 
     ensureDialogExists();
     // Add event listeners
@@ -161,6 +167,8 @@ function updateTextareaContent() {
   const cb2hop = document.getElementById("cb2hop").checked;
   const cbProj = document.getElementById("cbProj").checked;
 
+  const cbCurrent = document.getElementById("cbCurrent").checked;
+
   const resultPages = [];
   if (cb1hop) {
     resultPages.push(...Object.values(cache.links1hop));
@@ -171,8 +179,18 @@ function updateTextareaContent() {
   if (cbProj) {
     resultPages.push(...Object.values(cache.projLinks));
   }
+  // Add current page content if checked
+  if (cbCurrent && cache.currentPage) {
+    resultPages.push(cache.currentPage);
+  }
 
-  document.getElementById("resultTextarea").value = resultPages.join("\n\n");
+  const content = resultPages.join("\n\n");
+  document.getElementById("resultTextarea").value = content;
+
+  // Copy to clipboard after updating
+  navigator.clipboard
+    .writeText(content)
+    .catch((err) => console.error("Clipboard error: ", err));
 }
 
 // Add concatPages to Scrapbox's PageMenu
