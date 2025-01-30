@@ -28,9 +28,11 @@
 
       // Convert headings
       if (line.startsWith("## ")) {
-        line = "[*** " + line.slice(3) + "]";
+        line = "[*** " + line.slice(3).replace("**", "") + "]";
       } else if (line.startsWith("### ")) {
-        line = "[** " + line.slice(4) + "]";
+        line = "[** " + line.slice(4).replace("**", "") + "]";
+      } else if (line.startsWith("#### ")) {
+        line = "[** " + line.slice(5).replace("**", "") + "]";
       }
 
       // Convert bold text
