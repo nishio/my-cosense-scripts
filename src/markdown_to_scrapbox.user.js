@@ -39,7 +39,6 @@
       line = line.replace(/\*\*(.*?)\*\*/g, "[* $1]");
 
       // Convert bullet points based on leading spaces
-      const leadingSpaces = line.length - line.trimStart().length;
       const body = line.trimStart().replace(/^-/, "");
       const bulletPoint = body ? " ".repeat(currentIndentLevel) + body : "";
 
@@ -56,6 +55,7 @@
       navigator.clipboard.writeText(convertedText).then(() => {
         alert("Converted text copied to clipboard!");
       });
+      return convertedText;
     },
   });
 })();
